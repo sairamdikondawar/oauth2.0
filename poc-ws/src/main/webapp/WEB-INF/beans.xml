@@ -13,116 +13,115 @@
 	<http-conf:conduit name="*.http-conduit">
 		<http-conf:client Connection="close" AllowChunking="false" />
 	</http-conf:conduit>
-	
-    <bean id="oAuthFilter" class="org.apache.cxf.rs.security.oauth2.filters.OAuthRequestFilter">
-         <property name="dataProvider" ref="oauthProvider"/>
-     </bean>
-    
-     <bean id="oauthProvider" class="com.pss.poc.ws.auth.manager.OAuthManager"/>
-    
-     <bean id="thirdPartyRegService" class="com.pss.poc.ws.auth.manager.ThirdPartyRegistrationService">
-         <property name="dataProvider" ref="oauthProvider"/>
-         <property name="clientDetailsDAO" ref="ClientDetailsDAO"></property>
-     </bean>
-    
-  <!--   <bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
-         <property name="dataProvider" ref="oauthProvider"/>
-     </bean> -->
-    
-    
-     <bean id="clientRegistrationConfirmView" class="org.apache.cxf.jaxrs.provider.RequestDispatcherProvider">
-         <property name="resourcePath" value="/forms/registerAppConfirm.jsp"/>
-         <property name="beanName" value="newClient"/>
-         <property name="logRedirects" value="true"/>
-     </bean>
-    
-     <bean id="jsonProvider" class="org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider"/>
-    
- 
-     <jaxrs:server id="oauthServer" address="/oauth">
-        <jaxrs:serviceBeans>
-           <ref bean="thirdPartyRegService"/>
-           <ref bean="accessTokenService"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-           <ref bean="jsonProvider"/>
-           <ref bean="clientRegistrationConfirmView"/>
-        </jaxrs:providers>
-     </jaxrs:server>
-    
-      <bean id="thirdPartySecurityContext" class="com.pss.poc.ws.thirdparty.SecurityContextFilter">
-         <property name="clientDetailsDAO" ref="ClientDetailsDAO"></property>
-         <property name="realm" value="Reservations"/>
-     </bean>
-    
-    <bean id="socialSecurityContext" class="com.pss.poc.ws.auth.manager.SecurityContextFilter">
-    
-     </bean>
-    
-         
-     
-     <bean id="atServiceClient" factory-bean="atServiceClientFactory" factory-method="createWebClient"/>
-     
-    <bean id="atServiceClientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
-         <property name="address" value="http://localhost:8080/poc-ws/oauth/token"/>
-         <property name="headers">
-            <map>
-               <entry key="Accept" value="application/json"/>
-            </map>
-         </property>
-     </bean>
-     
-      
-     
-     <bean id="logInbound"
-	     class="org.apache.cxf.interceptor.LoggingInInterceptor" />
-	 <bean id="logOutbound"
-	     class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
-	 
-	 <cxf:bus>
-	    <cxf:inInterceptors>
-	 	    <ref bean="logInbound" />
-	 	</cxf:inInterceptors>
-	 	<cxf:outInterceptors>
-	 		<ref bean="logOutbound" />
-	 	</cxf:outInterceptors>
-	 </cxf:bus>
-	  
-	 
-	 <bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
-  <property name="dataProvider" ref="oauthProvider"/>
-</bean>
- <!-- <bean id="accessTokenValidateService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenValidateService">
-  <property name="dataProvider" ref="oauthProvider"/>
-</bean> -->
- 
- 
- 
+
+	<bean id="oAuthFilter" class="org.apache.cxf.rs.security.oauth2.filters.OAuthRequestFilter">
+		<property name="dataProvider" ref="oauthProvider" />
+	</bean>
+
+	<bean id="oauthProvider" class="com.pss.poc.ws.auth.manager.OAuthManager">
+		<property ref="ClientDetailsDAO" name="clientDetailsDAO"></property>
+	</bean>
+	<bean id="oauthAuthorizeService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
+		<property name="dataProvider" ref="oauthProvider" />
+	</bean>
+	<bean id="thirdPartyRegService" class="com.pss.poc.ws.auth.manager.ThirdPartyRegistrationService">
+
+		<property name="clientDetailsDAO" ref="ClientDetailsDAO"></property>
+	</bean>
+
+	<bean id="accessTokenService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenService">
+		<property name="dataProvider" ref="oauthProvider" />
+	</bean>
 
 
-<bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
-  <property name="dataProvider" ref="oauthProvider"/>
-</bean>
- 
-  <bean id="oauthClient" class="com.pss.poc.ws.auth.manager.OAuthClientManager">
-         <property name="authorizationURI" value="http://localhost:8080/poc-ws/pocupload/authorize"/>
-         <property name="accessTokenService" ref="atServiceClient"/>
-     </bean>
- 
- <bean id="FileUploadService" class="com.pss.poc.ws.service.FileUploadService">
- 		<property name="oAuthClientManager" ref="oauthClient"/>
+	<bean id="jsonProvider" class="org.apache.cxf.rs.security.oauth2.provider.OAuthJSONProvider" />
+
+	<bean id="clientRegistrationConfirmView" class="org.apache.cxf.jaxrs.provider.RequestDispatcherProvider">
+		<property name="resourcePath" value="/forms/registerAppConfirm.jsp" />
+		<property name="beanName" value="newClient" />
+		<property name="logRedirects" value="true" />
+	</bean>
+
+
+
+
+	<jaxrs:server id="oauthServer" address="/oauth">
+		<jaxrs:serviceBeans>
+			<ref bean="oauthAuthorizeService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="jsonProvider" />
+			<ref bean="clientRegistrationConfirmView" />
+		</jaxrs:providers>
+	</jaxrs:server>
+
+	<bean id="thirdPartySecurityContext" class="com.pss.poc.ws.thirdparty.SecurityContextFilter">
+		<property name="clientDetailsDAO" ref="ClientDetailsDAO"></property>
+		<property name="realm" value="Reservations" />
+	</bean>
+
+	<bean id="socialSecurityContext" class="com.pss.poc.ws.auth.manager.SecurityContextFilter">
+
+	</bean>
+
+
+
+	<bean id="atServiceClient" factory-bean="atServiceClientFactory" factory-method="createWebClient" />
+
+	<bean id="atServiceClientFactory" class="org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean">
+		<property name="address" value="http://localhost:8080/poc-ws/oauth/token" />
+		<property name="headers">
+			<map>
+				<entry key="Accept" value="application/json" />
+			</map>
+		</property>
+	</bean>
+
+
+
+	<bean id="logInbound" class="org.apache.cxf.interceptor.LoggingInInterceptor" />
+	<bean id="logOutbound" class="org.apache.cxf.interceptor.LoggingOutInterceptor" />
+
+	<cxf:bus>
+		<cxf:inInterceptors>
+			<ref bean="logInbound" />
+		</cxf:inInterceptors>
+		<cxf:outInterceptors>
+			<ref bean="logOutbound" />
+		</cxf:outInterceptors>
+	</cxf:bus>
+
+
+
+	<!-- <bean id="accessTokenValidateService" class="org.apache.cxf.rs.security.oauth2.services.AccessTokenValidateService"> <property name="dataProvider" ref="oauthProvider"/> </bean> -->
+
+
+
+
+
+	<bean id="authorizationService" class="org.apache.cxf.rs.security.oauth2.services.AuthorizationCodeGrantService">
+		<property name="dataProvider" ref="oauthProvider" />
+	</bean>
+
+	<bean id="oauthClient" class="com.pss.poc.ws.auth.manager.OAuthClientManager">
+		<property name="authorizationURI" value="http://localhost:8080/poc-ws/pocupload/authorize" />
+		<property name="accessTokenService" ref="atServiceClient" />
+	</bean>
+
+	<bean id="FileUploadService" class="com.pss.poc.ws.service.FileUploadService">
+		<property name="oAuthClientManager" ref="oauthClient" />
 		<property name="fileUploadDAO" ref="FileUploadDAO" />
 	</bean>
- 
-<jaxrs:server id="pocUploadService" address="/pocupload">
-       <jaxrs:serviceBeans>
-           <ref bean="FileUploadService" />
-           <ref bean="authorizationService"/>
-       </jaxrs:serviceBeans>
-       <jaxrs:providers>
-       <ref bean="thirdPartySecurityContext"/>
-        
-       </jaxrs:providers>
-    </jaxrs:server> 
-    
+
+	<jaxrs:server id="pocUploadService" address="/pocupload">
+		<jaxrs:serviceBeans>
+			<ref bean="FileUploadService" />
+			<ref bean="authorizationService" />
+		</jaxrs:serviceBeans>
+		<jaxrs:providers>
+			<ref bean="thirdPartySecurityContext" />
+
+		</jaxrs:providers>
+	</jaxrs:server>
+
 </beans>

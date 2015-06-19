@@ -11,6 +11,13 @@
 		<org.apache.cxf.version>2.7.10</org.apache.cxf.version>
 	</properties>
 	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.sun.faces</groupId>
 			<artifactId>jsf-api</artifactId>
@@ -75,15 +82,16 @@
 			<version>4.0</version>
 		</dependency>
 		<dependency>
- 			 <groupId>org.apache.cxf</groupId>
-  		 	 <artifactId>cxf-rt-rs-security-oauth2</artifactId>
-  		 	 <version>2.7.12</version>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-security-oauth2</artifactId>
+			<version>2.7.12</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-			<version>${org.apache.cxf.version}</version>
+			<version>3.1.1</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle-jaxrs</artifactId>
@@ -99,6 +107,11 @@
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework.version}</version>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${org.apache.cxf.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>

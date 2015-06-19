@@ -1,9 +1,12 @@
 package com.pss.poc.web.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -16,6 +19,15 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -66,6 +78,42 @@ public class FileDownloadController implements Serializable {
 	}
 
 	public String getFileId() {
+		System.err.println("entering doGet");
+		try {
+			// get code
+
+			HttpClient client = new DefaultHttpClient();
+			HttpGet post = new HttpGet("http://localhost:8080/poc-ws/oauth/authorize?client_id=12345&response_code=code&scope=readData&redirect_uri=http://localhost:8080/iclub-www");
+
+			List<NameValuePair> arguments = new ArrayList<>(3);
+			arguments.add(new BasicNameValuePair("redirect_uri", "http://localhost:8080/iclub-www"));
+			arguments.add(new BasicNameValuePair("client_secret", "123456"));
+			arguments.add(new BasicNameValuePair("client_id", "12345"));
+			arguments.add(new BasicNameValuePair("scope", "readData"));
+			arguments.add(new BasicNameValuePair("response_type", "code"));
+			try {
+				Base64.Encoder encoder = Base64.getEncoder();
+				String normalString = "12345" + ":" + "123456";
+				String encodedValue = encoder.encodeToString(normalString.getBytes(StandardCharsets.UTF_8));
+				post.setHeader("Authorization", "Basic " + encodedValue);
+				post.setHeader("Content-Type", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				// post.setEntity(new UrlEncodedFormEntity(arguments));
+				HttpResponse response1 = client.execute(post);
+				String outputString = EntityUtils.toString(response1.getEntity());
+				System.out.println(outputString);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("leaving doGet");
 		return fileId;
 	}
 

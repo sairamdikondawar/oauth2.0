@@ -5,14 +5,17 @@ import static org.hibernate.criterion.Example.create;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.LockOptions;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pss.poc.orm.bean.ClientDetails;
+import com.pss.poc.orm.bean.UserAccount;
 
 @Transactional
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -64,6 +67,20 @@ public class ClientDetailsDAO {
 		log.debug("getting ClientDetails instance with id: " + id);
 		try {
 			ClientDetails instance = (ClientDetails) getCurrentSession().get("com.pss.poc.orm.bean.ClientDetails", id);
+			return instance;
+		} catch (RuntimeException re) {
+			log.error("get failed", re);
+			throw re;
+		}
+	}
+
+	public ClientDetails findByName(String name) {
+		log.debug("getting UserAccount instance with id: " + name);
+		try {
+
+			Criteria criteria = getCurrentSession().createCriteria(ClientDetails.class);
+			criteria.add(Restrictions.like("clientid", name).ignoreCase());
+			ClientDetails instance = (ClientDetails) criteria.uniqueResult();
 			return instance;
 		} catch (RuntimeException re) {
 			log.error("get failed", re);

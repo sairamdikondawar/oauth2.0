@@ -5,7 +5,6 @@ import javax.faces.application.FacesMessage.Severity;
 import javax.faces.context.FacesContext;
 
 public class PocWebHelper {
-	
 
 	public static void addMessage(String desc, Severity sev) {
 		FacesContext context = FacesContext.getCurrentInstance();
@@ -25,5 +24,9 @@ public class PocWebHelper {
 	public static Object getObjectIntoSession(String key) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		return context.getExternalContext().getSessionMap().get(key);
+	}
+
+	public static void main(String[] args) {
+
 	}
 }

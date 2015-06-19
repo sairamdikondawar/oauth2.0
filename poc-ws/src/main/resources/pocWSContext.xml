@@ -5,4 +5,7 @@
 	<bean id="FileUploadService" class="com.pss.poc.ws.service.FileUploadService">
 		<property name="fileUploadDAO" ref="FileUploadDAO" />
 	</bean>
+	<bean id="UserRegistrationService" class="com.pss.poc.ws.service.UserRegistrationService">
+		<property name="accounts" ref="UserAccounts" />
+	</bean>
 </beans>
